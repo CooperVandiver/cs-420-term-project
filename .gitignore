@@ -4,6 +4,7 @@ lib
 lib64
 scripts
 share
+pyvenv.cfg
 **/*.ipynb_checkpoints
 **/__pycache__
 
