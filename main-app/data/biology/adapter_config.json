@@ -1,7 +1,7 @@
 {
   "alpha_pattern": {},
   "auto_mapping": null,
-  "base_model_name_or_path": "mosaicml/mpt-7b-chat",
+  "base_model_name_or_path": "facebook/opt-1.3b",
   "bias": "none",
   "fan_in_fan_out": false,
   "inference_mode": true,
@@ -16,8 +16,10 @@
   "rank_pattern": {},
   "revision": null,
   "target_modules": [
-    "Wqkv",
-    "out_proj"
+    "out_proj",
+    "v_proj",
+    "k_proj",
+    "q_proj"
   ],
   "task_type": "CAUSAL_LM"
 }

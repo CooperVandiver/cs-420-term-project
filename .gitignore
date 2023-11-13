@@ -1,5 +1,6 @@
 etc
 include
+_lib
 lib
 lib64
 scripts
