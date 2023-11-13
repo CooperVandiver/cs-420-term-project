@@ -1,10 +1,6 @@
 if __name__ == '__main__':
-    import fastwsgi
+    from waitress import serve
     from app import app
 
-    fastwsgi.run(
-        wsgi_app=app,
-        host='0.0.0.0',
-        port=8080
-    )
-    
+    serve(app, listen='*:8080')
+
