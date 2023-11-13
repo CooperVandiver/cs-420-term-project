@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block style %}
+<style>
+
+.lds-facebook {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.lds-facebook div {
+    display: inline-block;
+    position: absolute;
+    width: 16px;
+    background: #fff;
+    animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+
+.lds-facebook div:nth-child(1) {
+    animation-delay: -0.24s;
+}
+
+.lds-facebook div:nth-child(2) {
+    left: 24px;
+    animation-delay: -0.12s;
+}
+
+.lds-facebook div:nth-child(3) {
+    left: 48px;
+    animation-delay: 0s;
+}
+
+@keyframes lds-facebook {
+    0% {
+        top: 8px;
+        height: 64px;
+    }
+    50%, 100% {
+        top: 24px;
+        height: 32px;
+    }
+}
+
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="//unpkg.com/alpinejs" defer></script>
+{% endblock %}
+
+{% block content %}
+<div id='data' x-data>
+
+<div id="header-container"
+ class="border-b">
+    <div id="header"
+     class="grid w-full grid-cols-3 mb-4">
+        <div class='flex justify-center'>
+            <h1 class="text-2xl m-auto text-white font-bold">Expert Chat</h1>
+        </div>
+        <div class="flex justify-center col-span-2">
+            <div class='m-auto'>
+                <form method='POST' x-ref='expertForm' action='/expert' >
+                    <select name="expert" id="expert-select" x-ref='expertSelect'
+                     class="bg-gray-700 border border-gray-600 text-gray-100 text-xl rounded-md p-1">
+                        {% for e in experts %}
+                        {% if e == expert %}
+                            <option selected value="{{ e }}">
+                                {{ e }}
+                            </option>
+                        {% else %}
+                            <option value="{{ e }}">
+                                {{ e }}
+                            </option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    <button type='submit'
+                     class="text-white text-xl rounded-md border border-gray-600 px-2 ml-1">
+                        Go Chat
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class='py-4'></div>
+<div id='convo-container'
+ class='w-11/12'
+ style="max-height: 67%;">
+    <div id='convo' class='grid grid-cols-7 justify-items-center'>
+        <template x-for="message in $store.messages" :key="message.id">
+            <div :class="message.id % 2 == 0 
+                         ? 'flex justify-center col-start-4 col-span-3 p-2 my-4 border border-gray-600 rounded-md w-full bg-gray-500' 
+                         : 'flex justify-center col-start-2 col-span-3 p-2 my-4 border border-gray-600 rounded-md w-full bg-gray-500'"
+            x-data="{ show: false }"
+            x-init="$nextTick(() => { show = true })"
+            x-show="show"
+            x-transition.duration.500ms>
+                <span class='text-2xl text-white'
+                 x-text="message.content"> 
+                </span>
+            </div>
+        </template>
+        <template x-if="!$store.resolved">
+            <div class='lds-facebook col-start-4 col-end-auto'>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </template>
+    </div>
+</div>
+<div class='py-4'></div>
+<div id='user-input-container grid grid-cols-1 justify-items-center mb-1'>
+    <div id='user-input'
+     class="w-3/4 mx-auto flex">
+        <textarea placeholder="Input here" x-model="$store.message" @keyup.enter="sendMessage()"
+         class="block p-2.5 w-full text-sm rounded-lg border bg-gray-700 border-gray-600 placeholder-gray-400 text-gray-100 focus:ring-blue-500 focus:border-blue-500">
+        </textarea>
+        <button 
+         class="border rounded-md text-xl text-gray-100 border-gray-600 px-3 ml-2"
+         @click='console.log($store.message); sendMessage()'>Send</button>
+    </div>
+</div>
+
+</div>
+
+<script>
+
+document.addEventListener('alpine:init', () => {
+    Alpine.store('resolved', true);
+    Alpine.store('message', '');
+    Alpine.store('currId', 0);
+    Alpine.store('messages', []);
+});
+
+async function sendMessage() {
+    let expert = '{{ expert }}';
+    if (Alpine.store('message').trim() == '') {
+        Alpine.store('message', '');
+        return;
+    }
+    if (!Alpine.store('resolved')) {
+        return;
+    }
+    Alpine.store('resolved', false);
+    let msg = Alpine.store('message');
+    addUserMessage(msg);
+    Alpine.store('message', '');
+    let data = await fetch('/message', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            'message': msg,
+            'expert': expert
+        })
+    }).then(r => r.json()).then(f => f.message);
+    console.log(data);
+    addBotMessage(data);
+    Alpine.store('resolved', true);
+}
+
+function addUserMessage(m) {
+    Alpine.store('messages', [...Alpine.store('messages'), {
+        content: m,
+        id: Alpine.store('currId')
+    }]);
+    Alpine.store('currId', Alpine.store('currId') + 1);
+}
+
+function addBotMessage(m) {
+    Alpine.store('messages', [...Alpine.store('messages'), {
+        content: m,
+        id: Alpine.store('currId')
+    }]);
+    Alpine.store('currId', Alpine.store('currId') + 1);
+}
+
+</script>
+
+{% endblock %}

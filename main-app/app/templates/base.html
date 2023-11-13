@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Expert Chat</title>
+        <link href="{{ url_for('static', filename='css/output.css') }}"
+         rel="stylesheet">
+        {% block style %}
+        {% endblock %}
+        {% block scripts %}
+        {% endblock %}
+    </head>
+    <body class='overflow-x-hidden'>
+        <div id='root'
+         class="bg-gray-950 min-h-[calc(100dvh)] min-w-[calc(100dvw)]">
+            <div id='container'
+             class="p-6 min-h-full w-full">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </body>
+</html>

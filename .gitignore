@@ -1,0 +1,9 @@
+etc
+include
+lib
+lib64
+scripts
+share
+**/*.ipynb_checkpoints
+**/__pycache__
+
