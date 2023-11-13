@@ -45,8 +45,6 @@ m.add_adapter(peft_config, adapter_name='Biology')
 
 tok = AutoTokenizer.from_pretrained(model_id)
 
-m.to_bettertransformer()
-
 @app.route('/')
 def index():
     return redirect(url_for('chat', expert='Default'))
