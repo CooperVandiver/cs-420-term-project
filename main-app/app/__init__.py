@@ -28,8 +28,7 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 experts = ['Default', 'Physics', 'Biology']
 
 # Loading model and adapters
-model_id = 'mosaicml/mpt-7b-chat'
-tokenizer_id = 'EleutherAI/gpt-neox-20b'
+model_id = 'facebook/opt-1.3b'
 
 m = AutoModelForCausalLM.from_pretrained(
     model_id,
@@ -44,7 +43,7 @@ m.add_adapter(peft_config, adapter_name='Physics')
 peft_config = PeftConfig.from_pretrained('./data/biology')
 m.add_adapter(peft_config, adapter_name='Biology')
 
-tok = AutoTokenizer.from_pretrained(tokenizer_id)
+tok = AutoTokenizer.from_pretrained(model_id)
 
 m.to_bettertransformer()
 
