@@ -1,3 +1,6 @@
+# OS imports
+from multiprocessing import cpu_count
+
 # QLoRA imports
 import torch
 from peft import (
@@ -45,6 +48,8 @@ m.add_adapter(peft_config, adapter_name='Biology')
 
 tok = AutoTokenizer.from_pretrained(model_id)
 
+torch.set_num_threads(cpu_count())
+
 @app.route('/')
 def index():
     return redirect(url_for('chat', expert='Default'))
@@ -71,7 +76,6 @@ def genMessage():
         m.disable_adapters()
     else:
         if expert != 'Default' and expert in experts:
-            print('--- Valid expert! ---')
             m.enable_adapters()
             m.set_adapter(expert)
         else:
@@ -81,8 +85,6 @@ def genMessage():
     if not prompt:
         return {'error': 'Message field is required'}
 
-    print(f'--- Running {expert} ---')
-
     response_msg = ''
 
     prompt = prompt + '\nA.'
@@ -90,7 +92,6 @@ def genMessage():
     inputs = tok(prompt, return_tensors='pt').input_ids
 
     try:
-        print('--- Generating output ---')
         with torch.no_grad():
             outputs = m.generate(
                 input_ids=inputs,
