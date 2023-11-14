@@ -113,7 +113,8 @@ def genMessage():
             if len(outputs[-1].strip()) <= 1:
                 outputs = outputs[:-1]
 
-            outputs = list(map(lambda a: a.strip(), outputs))
+            if type(outputs) is list:
+                outputs = list(map(lambda a: a.strip(), outputs))
 
             outputs = '. '.join(outputs)
 
@@ -130,3 +131,5 @@ def genMessage():
         pass
 
     return {'message': response_msg}
+
+print('--- App is ready! ---')
